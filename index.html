@@ -9,26 +9,11 @@
 <body>
   <div class="panel" id="panel">
     <audio id="stream" class="stream" src="http://stream.radio-t.com"></audio>
-    <div class="panel__toggle" id="panel__toggle"></div>
-    <div class="panel__content" id="panel__content">
-      <span id="play-stream" class="play-stream disabled"></span>
-      <span class="part part_days" id="part_days">
-        <span class="part__num"></span>
-        <span class="part__suffix"></span>
-      </span>
-      <span class="part part_hours" id="part_hours">
-        <span class="part__num"></span>
-        <span class="part__suffix"></span>
-      </span>
-      <span class="part part_mins" id="part_mins">
-        <span class="part__num"></span>
-        <span class="part__suffix"></span>
-      </span>
-      <span class="part part_secs" id="part_secs">
-        <span class="part__num"></span>
-        <span class="part__suffix"></span>
-      </span>  
-    </div>
+    <span id="play-stream" class="play-stream disabled"></span>
+    <span class="timer">
+      <span class="timer__prefix" id="timer__prefix"></span>  
+      <span class="timer__time" id="timer__time"></span>
+    </span>
   </div>
   <iframe src="https://gitter.im/umputun/radio-t/~embed"></iframe>
   <script src="app.js"></script>

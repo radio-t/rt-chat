@@ -1,52 +1,18 @@
-var parts = {
-    'days': document.getElementById('part_days'),
-    'hours': document.getElementById('part_hours'),
-    'mins': document.getElementById('part_mins'),
-    'secs': document.getElementById('part_secs')
-  },
-  panel = document.getElementById('panel'),
-  toggle = document.getElementById('panel__toggle'),
+var  panel = document.getElementById('panel'),
+  prefix = document.getElementById('timer__prefix'),
   src = document.getElementById('stream').src;
 
 function onAir() {
   panel.classList.add('panel_on-air');
-  toggle.textContent = 'вещаем!';
+  prefix.textContent = 'Вещаем!';
 }
 
 function offAir() {
   panel.classList.remove('panel_on-air');
-  toggle.textContent = 'до эфира';
+  prefix.textContent = 'До эфира';
 }
 
-function setTime(type, value) {
-  function getUnits(value, units) {
-      return (/^[0,2-9]?[1]$/.test(value)) ? units[0] : ((/^[0,2-9]?[2-4]$/.test(value)) ? units[1] : units[2])
-  }
-
-  var el, suffixes;
-
-  switch (type) {
-    case 'days': suffixes = ['день', 'дня', 'дней'];
-      break;
-    case 'hours': suffixes = ['час', 'часа', 'часов'];
-      break;
-    case 'mins': suffixes = ['минута', 'минуты', 'минут'];
-      break;
-    case 'secs': suffixes = ['секунда', 'секунды', 'секунд'];
-      break;
-  }
-
-  el = parts[type];
-
-  var elNum = el.children[0],
-    elSuf = el.children[1];
-
-  el.style.display = '';
-  elNum.textContent = value;
-  elSuf.textContent = getUnits(value, suffixes);
-}
-
-function setShowTimer() {
+function setShowTimer(el) {
   var timeInMoscow = new Date();
   timeInMoscow.setMinutes(timeInMoscow.getMinutes() + timeInMoscow.getTimezoneOffset() + 3 * 60);
 
@@ -71,36 +37,36 @@ function setShowTimer() {
 
   hours = ('0' + hours % 24).slice(-2);
 
+  var res = [];
+
   if (days > 0) {
-    setTime('days', days);
-    setTime('hours', hours);
-    setTime('mins', minutes);
-    setTime('secs', seconds);
+    res.push(days);
+    res.push(hours);
+    res.push(minutes);
+    res.push(seconds);
   } else {
-    parts['days'].style.display = 'none';
-
     if (hours > 0) {
-      setTime('hours', hours);
-      setTime('mins', minutes);
-      setTime('secs', seconds);
+      res.push(hours);
+      res.push(minutes);
+      res.push(seconds);
     } else {
-      parts['hours'].style.display = 'none';
-
       if (minutes > 0) {
-        setTime('mins', minutes);
-        setTime('secs', seconds);
+        res.push(minutes);
+        res.push(seconds);
       } else {
-        parts['hours'].style.display = 'none';
-
-        setTime('secs', seconds);
+        res.push(seconds);
       }
     }
   }
+
+  el.textContent = res.join(':');
 }
 
-setShowTimer();
+var t = document.getElementById('timer__time');
+
+setShowTimer(t);
 window.setInterval(function() {
-    setShowTimer();
+    setShowTimer(t);
 }, 999);
 
 document.getElementById('play-stream').addEventListener('click', function(e) {
@@ -129,15 +95,5 @@ document.getElementById('play-stream').addEventListener('click', function(e) {
     audio.src = null;  
     audio.pause();
     target.classList.add('disabled');
-  }
-});
-
-document.getElementById('panel__toggle').addEventListener('click', function(e) {
-  var content = document.getElementById('panel__content');
-
-  if (content.style.display == 'none') {
-    content.style.display = '';
-  } else {
-    content.style.display = 'none';
   }
 });

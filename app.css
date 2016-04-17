@@ -31,7 +31,7 @@ body {
   top: 0;
   right: 0;
   
-  padding: 5px 15px;
+  padding: 10px 15px;
 
   background: #fff;
   border-radius: 0 0 0 5px;
@@ -46,29 +46,8 @@ body {
   text-align: center;
 }
 
-.panel_on-air .part {
+.panel_on-air .timer__time {
   display: none;
-}
-
-.panel__toggle {
-  padding: 0 5px 2px;
-  margin-bottom: 5px;
-  
-  color: #555;
-  font-weight: 700;
-  text-align: center;
-  
-  cursor: pointer;
-  
-  transition: 200ms all;
-}
-
-.panel__toggle:hover {
-  background: #eee;
-}
-
-.panel__content {
-  padding-bottom: 5px;
 }
 
 .play-stream {
@@ -77,6 +56,7 @@ body {
     vertical-align: middle;
     width: 32px;
     height: 32px;
+    margin-right: 5px;
     
     background: url("https://radio-t.com/images/controls.png") no-repeat top right;
 
@@ -94,36 +74,4 @@ body {
 
 .stream {
   display: none;
-}
-
-.part {
-  display: inline-block;
-  width: 60px;
-  vertical-align: middle; 
-  
-  text-align: center;
-}
-
-.part_days {
-  width: 45px;
-}
-
-.part_hours {
-  width: 55px;
-}
-
-.part_hidden {
-  display: none;
-}
-
-.part_secs {
-  width: 70px;
-}
-
-.part__num {
-  display: block;
-}
-
-.part__suffix {
-  display: block;
 }
