@@ -1,0 +1,129 @@
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+html,
+body,
+iframe {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  
+  border: 0;
+}
+
+html {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 100%;
+  min-height: 100%;
+  
+  overflow: hidden;
+}
+
+.panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  
+  padding: 5px 15px;
+
+  background: #fff;
+  border-radius: 0 0 0 5px;
+  border: 1px solid rgba(100, 100, 100, .3);
+  border-width: 0 0 1px 1px;
+  
+  font-size: 14px;
+  font-family: Verdana, Tahoma, Arial, Helvetica, sans-serif;
+}
+
+.panel_on-air {
+  text-align: center;
+}
+
+.panel_on-air .part {
+  display: none;
+}
+
+.panel__toggle {
+  padding: 0 5px 2px;
+  margin-bottom: 5px;
+  
+  color: #555;
+  font-weight: 700;
+  text-align: center;
+  
+  cursor: pointer;
+  
+  transition: 200ms all;
+}
+
+.panel__toggle:hover {
+  background: #eee;
+}
+
+.panel__content {
+  padding-bottom: 5px;
+}
+
+.play-stream {
+    display: inline-block;
+    
+    vertical-align: middle;
+    width: 32px;
+    height: 32px;
+    
+    background: url("https://radio-t.com/images/controls.png") no-repeat top right;
+
+    transition: opacity 300ms;
+    cursor: pointer;
+}
+
+.play-stream:hover {
+    opacity: 0.8;
+}
+
+.play-stream.disabled {
+    background-position: top left;
+}
+
+.stream {
+  display: none;
+}
+
+.part {
+  display: inline-block;
+  width: 60px;
+  vertical-align: middle; 
+  
+  text-align: center;
+}
+
+.part_days {
+  width: 45px;
+}
+
+.part_hours {
+  width: 55px;
+}
+
+.part_hidden {
+  display: none;
+}
+
+.part_secs {
+  width: 70px;
+}
+
+.part__num {
+  display: block;
+}
+
+.part__suffix {
+  display: block;
+}
