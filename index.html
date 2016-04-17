@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Чат Радио-Т</title>
+
+  <style type="text/css">
+    *,
+    *:before,
+    *:after {
+      box-sizing: inherit;
+    }
+
+    html,
+    body {
+      padding: 0;
+      margin: 0;
+    }
+
+    html {
+      width: 100%;
+      height: 100%;
+
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 100%;
+      height: 100%;
+      min-width: 100%;
+      min-height: 100%;
+    }
+
+    iframe {
+        width: 100%;
+        height: 100%;
+        
+        border: 0;
+    }
+
+    .panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      
+      padding: 10px 15px;
+
+      background: #fff;
+      border-radius: 0 0 0 5px;
+      border: 1px solid rgba(100, 100, 100, .3);
+      border-width: 0 0 1px 1px;
+      
+      font-size: 14px;
+      font-family: Verdana, Tahoma, Arial, Helvetica, sans-serif;
+    }
+
+    #play-stream {
+        display: inline-block;
+        
+        vertical-align: -11px;
+        width: 32px;
+        height: 32px;
+        
+        background: url("https://radio-t.com/images/controls.png") no-repeat top right;
+
+        transition: opacity 300ms;
+        cursor: pointer;
+    }
+
+    #play-stream.disabled {
+        background-position: top left;
+    }
+
+    #play-stream:hover {
+        opacity: 0.8;
+    }
+
+    #stream {
+      display: none;
+    }
+
+    #timer {
+      display: inline-block;
+      width: 320px;
+      margin-left: 8px;
+    }
+
+    #timer.onair {
+      width: auto;
+    }
+
+    #timer.min {
+      width: 260px;
+    }
+  </style>
+</head>
+
+
+<body>
+  <div class="panel">
+    <span id="play-stream" class="disabled"></span>&nbsp;<span id="timer"></span>
+    <audio id="stream" src="http://stream.radio-t.com"></audio>
+  </div>
+  <iframe src="https://gitter.im/umputun/radio-t/~embed"></iframe>
+  <script>
+    function setShowTimer(el) {
+      function getUnits(value, units) {
+          return (/^[0,2-9]?[1]$/.test(value)) ? units[0] : ((/^[0,2-9]?[2-4]$/.test(value)) ? units[1] : units[2])
+      }
+
+      var timeInMoscow = new Date();
+      timeInMoscow.setMinutes(timeInMoscow.getMinutes() + timeInMoscow.getTimezoneOffset() + 3 * 60);
+
+      var nextShow = new Date(timeInMoscow);
+      nextShow.setDate(nextShow.getDate() + 6 - nextShow.getDay());
+      nextShow.setHours(23, 10, 0, 0);
+
+      var totalSeconds = Math.floor((nextShow - timeInMoscow) / 1000);
+
+      if (totalSeconds < 0) {
+          el.textContent = "Вещаем!";
+          el.classList.remove('min');
+          el.classList.add('onair');
+
+          return;
+      }
+
+      var seconds = totalSeconds % 60,
+          minutes = Math.round((totalSeconds - seconds) / 60) % 60,
+          hours = Math.round((totalSeconds - seconds - minutes * 60) / 3600),
+          days = (hours - hours % 24) / 24;
+
+      hours %= 24;
+
+      var result = "",
+          daysList = ['день', 'дня', 'дней'],
+          hoursList = ['час', 'часа', 'часов'],
+          minutesList = ['минута', 'минуты', 'минут'],
+          secondsList = ['секунда', 'секунды', 'секунд'];
+
+      if (days > 0) {
+          result += days + ' ' + getUnits(days, daysList) + ' ';
+      }
+
+      result += ((hours != 0) ? (('0' + hours).slice(-2) + ' ' + getUnits(hours, hoursList) + ' ') : '') + 
+                (('0' + minutes).slice(-2) + ' ' + getUnits(minutes, minutesList) + ' ') + 
+                (('0' + seconds).slice(-2) + ' ' + getUnits(seconds, secondsList));
+
+      if (hours == 0) {
+        el.classList.add('min');
+      } else {
+        el.classList.remove('min');
+      }
+
+      el.textContent = "До эфира " + result;
+    }
+
+    var t = document.getElementById('timer');
+
+    setShowTimer(t);
+    window.setInterval(function() {
+        setShowTimer(t);
+    }, 999);
+
+    document.getElementById('play-stream').addEventListener('click', function(e) {
+         var target = e.target;
+         var audio = document.getElementById('stream');
+
+         audio.addEventListener('ended', function() {
+             target.classList.add('disabled');
+             audio.currentTime = 0;
+         });
+
+         if (audio.paused) {
+             audio.play();
+             target.classList.remove('disabled');
+         } else {
+             audio.pause();
+             target.classList.add('disabled');
+         }
+     });
+  </script>
+</body>
+
+</html>
