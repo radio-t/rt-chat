@@ -140,7 +140,6 @@
 <body>
   <div class="panel" id="panel">
     <audio id="stream" class="stream" src="http://stream.radio-t.com"></audio>
-    <!-- <span id="timer" class="timer"></span> -->
     <div class="panel__toggle" id="panel__toggle">до эфира</div>
     <div class="panel__content" id="panel__content">
       <span id="play-stream" class="play-stream disabled"></span>
@@ -171,7 +170,8 @@
         'secs': document.getElementById('part_secs')
       },
       panel = document.getElementById('panel'),
-      toggle = document.getElementById('panel__toggle');
+      toggle = document.getElementById('panel__toggle'),
+      src = document.getElementById('stream').src;
 
     function onAir() {
       panel.classList.add('panel_on-air');
@@ -272,17 +272,28 @@
       var target = e.target;
       var audio = document.getElementById('stream');
 
-      audio.addEventListener('ended', function() {
+      audio.addEventListener('error', function() {
           target.classList.add('disabled');
-          audio.currentTime = 0;
+          
+          if (panel.classList.contains('panel_on-air')) {
+            setTimeout(function() {
+              audio.src = null;
+              audio.src = src;
+              audio.play();
+
+              target.classList.remove('disabled');
+            }, 5000);
+          }
       });
 
       if (audio.paused) {
-          audio.play();
-          target.classList.remove('disabled');
+        audio.src = src;
+        audio.play();
+        target.classList.remove('disabled');
       } else {
-          audio.pause();
-          target.classList.add('disabled');
+        audio.src = null;  
+        audio.pause();
+        target.classList.add('disabled');
       }
     });
 
