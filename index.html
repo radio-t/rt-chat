@@ -13,30 +13,25 @@
     }
 
     html,
-    body {
+    body,
+    iframe {
+      width: 100%;
+      height: 100%;
       padding: 0;
       margin: 0;
+      
+      border: 0;
     }
 
     html {
-      width: 100%;
-      height: 100%;
-
       box-sizing: border-box;
     }
 
     body {
-      width: 100%;
-      height: 100%;
       min-width: 100%;
       min-height: 100%;
-    }
-
-    iframe {
-        width: 100%;
-        height: 100%;
-        
-        border: 0;
+      
+      overflow: hidden;
     }
 
     .panel {
@@ -44,7 +39,7 @@
       top: 0;
       right: 0;
       
-      padding: 10px 15px;
+      padding: 5px 15px;
 
       background: #fff;
       border-radius: 0 0 0 5px;
@@ -55,10 +50,39 @@
       font-family: Verdana, Tahoma, Arial, Helvetica, sans-serif;
     }
 
-    #play-stream {
+    .panel_on-air {
+      text-align: center;
+    }
+
+    .panel_on-air .part {
+      display: none;
+    }
+
+    .panel__toggle {
+      padding: 0 5px 2px;
+      margin-bottom: 5px;
+      
+      color: #555;
+      font-weight: 700;
+      text-align: center;
+      
+      cursor: pointer;
+      
+      transition: 200ms all;
+    }
+
+    .panel__toggle:hover {
+      background: #eee;
+    }
+
+    .panel__content {
+      padding-bottom: 5px;
+    }
+
+    .play-stream {
         display: inline-block;
         
-        vertical-align: -11px;
+        vertical-align: middle;
         width: 32px;
         height: 32px;
         
@@ -68,119 +92,209 @@
         cursor: pointer;
     }
 
-    #play-stream.disabled {
-        background-position: top left;
-    }
-
-    #play-stream:hover {
+    .play-stream:hover {
         opacity: 0.8;
     }
 
-    #stream {
+    .play-stream.disabled {
+        background-position: top left;
+    }
+
+    .stream {
       display: none;
     }
 
-    #timer {
+    .part {
       display: inline-block;
-      width: 320px;
-      margin-left: 8px;
+      width: 60px;
+      vertical-align: middle; 
+      
+      text-align: center;
     }
 
-    #timer.onair {
-      width: auto;
+    .part_days {
+      width: 45px;
     }
 
-    #timer.min {
-      width: 260px;
+    .part_hours {
+      width: 55px;
+    }
+
+    .part_hidden {
+      display: none;
+    }
+
+    .part_secs {
+      width: 70px;
+    }
+
+    .part__num {
+      display: block;
+    }
+
+    .part__suffix {
+      display: block;
     }
   </style>
 </head>
-
-
 <body>
-  <div class="panel">
-    <span id="play-stream" class="disabled"></span>&nbsp;<span id="timer"></span>
-    <audio id="stream" src="http://stream.radio-t.com"></audio>
+  <div class="panel" id="panel">
+    <audio id="stream" class="stream" src="http://stream.radio-t.com"></audio>
+    <!-- <span id="timer" class="timer"></span> -->
+    <div class="panel__toggle" id="panel__toggle">до эфира</div>
+    <div class="panel__content" id="panel__content">
+      <span id="play-stream" class="play-stream disabled"></span>
+      <span class="part part_days" id="part_days">
+        <span class="part__num">6</span>
+        <span class="part__suffix">дней</span>
+      </span>
+      <span class="part part_hours" id="part_hours">
+        <span class="part__num">99</span>
+        <span class="part__suffix">часов</span>
+      </span>
+      <span class="part part_mins" id="part_mins">
+        <span class="part__num">99</span>
+        <span class="part__suffix">минута</span>
+      </span>
+      <span class="part part_secs" id="part_secs">
+        <span class="part__num">99</span>
+        <span class="part__suffix">секунда</span>
+      </span>  
+    </div>
   </div>
   <iframe src="https://gitter.im/umputun/radio-t/~embed"></iframe>
   <script>
-    function setShowTimer(el) {
+    var parts = {
+        'days': document.getElementById('part_days'),
+        'hours': document.getElementById('part_hours'),
+        'mins': document.getElementById('part_mins'),
+        'secs': document.getElementById('part_secs')
+      },
+      panel = document.getElementById('panel'),
+      toggle = document.getElementById('panel__toggle');
+
+    function onAir() {
+      panel.classList.add('panel_on-air');
+      toggle.textContent = 'вещаем!';
+    }
+
+    function offAir() {
+      panel.classList.remove('panel_on-air');
+      toggle.textContent = 'до эфира';
+    }
+
+    function setTime(type, value) {
       function getUnits(value, units) {
           return (/^[0,2-9]?[1]$/.test(value)) ? units[0] : ((/^[0,2-9]?[2-4]$/.test(value)) ? units[1] : units[2])
       }
 
+      var el, suffixes;
+
+      switch (type) {
+        case 'days': suffixes = ['день', 'дня', 'дней'];
+          break;
+        case 'hours': suffixes = ['час', 'часа', 'часов'];
+          break;
+        case 'mins': suffixes = ['минута', 'минуты', 'минут'];
+          break;
+        case 'secs': suffixes = ['секунда', 'секунды', 'секунд'];
+          break;
+      }
+
+      el = parts[type];
+
+      var elNum = el.children[0],
+        elSuf = el.children[1];
+
+      el.style.display = '';
+      elNum.textContent = value;
+      elSuf.textContent = getUnits(value, suffixes);
+    }
+
+    function setShowTimer() {
       var timeInMoscow = new Date();
       timeInMoscow.setMinutes(timeInMoscow.getMinutes() + timeInMoscow.getTimezoneOffset() + 3 * 60);
 
       var nextShow = new Date(timeInMoscow);
       nextShow.setDate(nextShow.getDate() + 6 - nextShow.getDay());
-      nextShow.setHours(23, 10, 0, 0);
+      nextShow.setHours(23, 0, 0, 0);
 
       var totalSeconds = Math.floor((nextShow - timeInMoscow) / 1000);
+      var passFromStart = (7 * 24 * 60 * 60) - totalSeconds;
 
-      if (totalSeconds < 0) {
-          el.textContent = "Вещаем!";
-          el.classList.remove('min');
-          el.classList.add('onair');
-
-          return;
+      if (totalSeconds < 0 || passFromStart < 3 * 60 * 60 && passFromStart >= 0) {
+        onAir();
+        return;
+      } else {
+        offAir();  
       }
 
-      var seconds = totalSeconds % 60,
-          minutes = Math.round((totalSeconds - seconds) / 60) % 60,
-          hours = Math.round((totalSeconds - seconds - minutes * 60) / 3600),
-          days = (hours - hours % 24) / 24;
+      var seconds = ('0' + totalSeconds % 60).slice(-2);
+        minutes = ('0' + Math.round((totalSeconds - seconds) / 60) % 60).slice(-2),
+        hours = Math.round((totalSeconds - seconds - minutes * 60) / 3600),
+        days = (hours - hours % 24) / 24;
 
-      hours %= 24;
-
-      var result = "",
-          daysList = ['день', 'дня', 'дней'],
-          hoursList = ['час', 'часа', 'часов'],
-          minutesList = ['минута', 'минуты', 'минут'],
-          secondsList = ['секунда', 'секунды', 'секунд'];
+      hours = ('0' + hours % 24).slice(-2);
 
       if (days > 0) {
-          result += days + ' ' + getUnits(days, daysList) + ' ';
-      }
-
-      result += ((hours != 0) ? (('0' + hours).slice(-2) + ' ' + getUnits(hours, hoursList) + ' ') : '') + 
-                (('0' + minutes).slice(-2) + ' ' + getUnits(minutes, minutesList) + ' ') + 
-                (('0' + seconds).slice(-2) + ' ' + getUnits(seconds, secondsList));
-
-      if (hours == 0) {
-        el.classList.add('min');
+        setTime('days', days);
+        setTime('hours', hours);
+        setTime('mins', minutes);
+        setTime('secs', seconds);
       } else {
-        el.classList.remove('min');
-      }
+        parts['days'].style.display = 'none';
 
-      el.textContent = "До эфира " + result;
+        if (hours > 0) {
+          setTime('hours', hours);
+          setTime('mins', minutes);
+          setTime('secs', seconds);
+        } else {
+          parts['hours'].style.display = 'none';
+
+          if (minutes > 0) {
+            setTime('mins', minutes);
+            setTime('secs', seconds);
+          } else {
+            parts['hours'].style.display = 'none';
+
+            setTime('secs', seconds);
+          }
+        }
+      }
     }
 
-    var t = document.getElementById('timer');
-
-    setShowTimer(t);
+    setShowTimer();
     window.setInterval(function() {
-        setShowTimer(t);
+        setShowTimer();
     }, 999);
 
     document.getElementById('play-stream').addEventListener('click', function(e) {
-         var target = e.target;
-         var audio = document.getElementById('stream');
+      var target = e.target;
+      var audio = document.getElementById('stream');
 
-         audio.addEventListener('ended', function() {
-             target.classList.add('disabled');
-             audio.currentTime = 0;
-         });
+      audio.addEventListener('ended', function() {
+          target.classList.add('disabled');
+          audio.currentTime = 0;
+      });
 
-         if (audio.paused) {
-             audio.play();
-             target.classList.remove('disabled');
-         } else {
-             audio.pause();
-             target.classList.add('disabled');
-         }
-     });
+      if (audio.paused) {
+          audio.play();
+          target.classList.remove('disabled');
+      } else {
+          audio.pause();
+          target.classList.add('disabled');
+      }
+    });
+
+    document.getElementById('panel__toggle').addEventListener('click', function(e) {
+      var content = document.getElementById('panel__content');
+
+      if (content.style.display == 'none') {
+        content.style.display = '';
+      } else {
+        content.style.display = 'none';
+      }
+    });
   </script>
 </body>
-
 </html>
