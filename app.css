@@ -54,11 +54,14 @@ body {
     display: inline-block;
     
     vertical-align: middle;
-    width: 32px;
-    height: 32px;
+    width: 25px;
+    height: 25px;
     margin-right: 5px;
     
-    background: url("https://radio-t.com/images/controls.png") no-repeat top right;
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDIwIDIwIj4NCgk8cGF0aCBpZD0icGF1c2UiIGZpbGw9IiMzMTljZTEiIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTcgMTRoMlY2SDd2OHptMy0xNEM0LjUgMCAwIDQuNSAwIDEwczQuNSAxMCAxMCAxMCAxMC00LjUgMTAtMTBTMTUuNSAwIDEwIDB6bTAgMThjLTQuNCAwLTgtMy42LTgtOHMzLjYtOCA4LTggOCAzLjYgOCA4LTMuNiA4LTggOHptMS00aDJWNmgtMnY4eiIvPg0KPC9zdmc+');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
 
     transition: opacity 300ms;
     cursor: pointer;
@@ -69,7 +72,11 @@ body {
 }
 
 .play-stream.disabled {
-    background-position: top left;
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDIwIDIwIj4NCiAgPHBhdGggaWQ9InBsYXkiIGZpbGw9IiMzMTljZTEiIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTggMTQuNWw2LTQuNS02LTQuNXY5ek0xMCAwQzQuNSAwIDAgNC41IDAgMTBzNC41IDEwIDEwIDEwIDEwLTQuNSAxMC0xMFMxNS41IDAgMTAgMHptMCAxOGMtNC40IDAtOC0zLjYtOC04czMuNi04IDgtOCA4IDMuNiA4IDgtMy42IDgtOCA4eiIvPg0KPC9zdmc+');
+}
+
+.timer {
+  vertical-align: -1px;
 }
 
 .stream {
