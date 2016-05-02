@@ -4,24 +4,26 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Чат Радио-Т</title>
-  <meta name="theme-color" content="#319ce1">
-  <link rel="stylesheet" href="app.css">
-  <link rel="manifest" href="rt-chat.webmanifest">
-  <link rel="icon" href="favicon.ico">
-  <link rel="icon" type="image/png" href="images/icon-228x228.png" sizes="228x228">
-  <link rel="apple-touch-icon" type="image/png" href="images/icon-228x228.png">
+  <link rel="stylesheet" href="/app.css">
+  <link rel="manifest" href="/rt-chat.webmanifest">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" href="/images/icon-228x228.png" sizes="228x228">
+  <link rel="apple-touch-icon" type="image/png" href="/images/icon-228x228.png">
 </head>
 <body>
   <div class="panel" id="panel">
-    <audio id="stream" class="stream" src="http://listen.radionomy.com/abc-jazz"></audio>
-    <span id="play-stream" class="play-stream disabled"></span>
+    <audio id="stream" class="stream" src="http://stream.radio-t.com"></audio>
+    <span id="play-stream" class="play-stream play-stream_disabled"></span>
     <span class="timer">
       <span class="timer__prefix" id="timer__prefix"></span>  
       <span class="timer__time" id="timer__time"></span>
     </span>
+    <div class="volume" id="volume">
+      <div class="volume__inner" id="volume__inner"></div>
+    </div>
   </div>
   <iframe src="https://gitter.im/umputun/radio-t/~embed"></iframe>
-  <script src="app.js"></script>
+  <script src="/app.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js');

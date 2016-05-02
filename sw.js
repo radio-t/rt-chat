@@ -1,7 +1,7 @@
 'use strict';
 
 var PREFIX = 'rt-chat-';
-var VERSION = 'v1.0.2';
+var VERSION = 'v1.1.0';
 var OFFLINE_CACHE = PREFIX + VERSION;
 var OFFLINE_URL = '/offline/index.html';
 
@@ -43,7 +43,6 @@ self.addEventListener('fetch', function(event) {
 			event.request.headers.get('accept').includes('text/html')
 		)
 	) {
-		console.log('Handling fetch event for', event.request.url);
 		event.respondWith(
 			fetch(event.request).catch(function(exception) {
 				// The `catch` is only triggered if `fetch()` throws an exception,
@@ -57,5 +56,15 @@ self.addEventListener('fetch', function(event) {
 				});
 			})
 		);
+	} else {
+		// It’s not a request for an HTML document, but rather for a CSS or SVG
+		// file or whatever…
+		if (event.request.url.indexOf(location.host) > -1) {
+			event.respondWith(
+				caches.match(event.request).then(function(response) {
+					return response || fetch(event.request);
+				})
+			);
+		}
 	}
 });

@@ -1,6 +1,28 @@
-var  panel = document.getElementById('panel'),
-  prefix = document.getElementById('timer__prefix'),
-  src = document.getElementById('stream').src;
+function getRelativeCoordinates (e, elem) {
+  var pos = {}, 
+    offset = {}, 
+    ref;
+
+  ref = elem.offsetParent;
+
+  pos.x = !! e.touches ? e.touches[0].pageX : e.pageX;
+  pos.y = !! e.touches ? e.touches[0].pageY : e.pageY;
+
+  offset.left = elem.offsetLeft;
+  offset.top = elem.offsetTop;
+
+  while (ref) {
+      offset.left += ref.offsetLeft;
+      offset.top += ref.offsetTop;
+
+      ref = ref.offsetParent;
+  }
+
+  return { 
+    x : pos.x - offset.left,
+    y : pos.y - offset.top,
+  }; 
+}
 
 function onAir() {
   panel.classList.add('panel_on-air');
@@ -62,6 +84,15 @@ function setShowTimer(el) {
   el.textContent = res.join(':');
 }
 
+var panel = document.getElementById('panel'),
+  prefix = document.getElementById('timer__prefix'),
+  audio = document.getElementById('stream'),
+  src = null;
+
+if (audio) {
+  src = audio.src;
+}
+
 var t = document.getElementById('timer__time');
 
 setShowTimer(t);
@@ -69,31 +100,78 @@ window.setInterval(function() {
     setShowTimer(t);
 }, 999);
 
-document.getElementById('play-stream').addEventListener('click', function(e) {
-  var target = e.target;
-  var audio = document.getElementById('stream');
+var playButton = document.getElementById('play-stream'),
+  volume = document.getElementById('volume'),
+  maxVolumeWidth = volume.offsetWidth,
+  volumePosition = document.getElementById('volume__inner'),
+  currentVolume = 1;
 
-  audio.addEventListener('error', function() {
-      target.classList.add('disabled');
+if (playButton) {
+  var errorHandler = function() {
+    playButton.classList.add('play-stream_disabled');
+    
+    if (panel.classList.contains('panel_on-air')) {
+      setTimeout(function() {
+        audio.pause();
+        audio.src = null;
+        audio.src = src;
+        audio.play();
+
+        playButton.classList.remove('play-stream_disabled');
+      }, 5000);
+    }
+  };
+
+  function updateVolume() {
+    volumePosition.style.width = currentVolume * 100 + '%';
+    audio.volume = currentVolume;
+  }
+
+  updateVolume();
+
+  playButton.addEventListener('click', function(e) {
+    var target = e.target;
       
-      if (panel.classList.contains('panel_on-air')) {
-        setTimeout(function() {
-          audio.src = null;
-          audio.src = src;
-          audio.play();
+    if (audio.paused) {
+      audio.src = src;
+      audio.play();
+      target.classList.remove('play-stream_disabled');
 
-          target.classList.remove('disabled');
-        }, 5000);
-      }
+      audio.addEventListener('error', errorHandler);
+    } else {
+      audio.removeEventListener('error', errorHandler);
+
+      audio.pause();
+      audio.src = null;  
+      target.classList.add('play-stream_disabled');
+    }
   });
 
-  if (audio.paused) {
-    audio.src = src;
-    audio.play();
-    target.classList.remove('disabled');
-  } else {
-    audio.src = null;  
-    audio.pause();
-    target.classList.add('disabled');
-  }
-});
+  panel.addEventListener('wheel', function (event) {
+    if (event.deltaY < 0 || event.deltaX > 0) {
+      currentVolume += .05;
+
+      if (currentVolume > 1) {
+        currentVolume = 1;
+      }
+    }
+
+    if (event.deltaY > 0 || event.deltaX < 0) {
+      currentVolume -= .05;
+
+      if (currentVolume < 0) {
+        currentVolume = 0;
+      }
+    }
+
+    updateVolume();
+  });
+
+  volume.addEventListener('click', function (event) {
+    var target = event.target;
+
+    currentVolume = getRelativeCoordinates(event, target).x / maxVolumeWidth;
+
+    updateVolume();
+  });
+}
